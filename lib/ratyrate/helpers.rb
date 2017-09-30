@@ -4,37 +4,46 @@ module Helpers
     cached_average = rateable_obj.average dimension
     avg = cached_average ? cached_average.avg : 0
 
-    star         = options[:star]         || 5
-    enable_half  = options[:enable_half]  || false
-    half_show    = options[:half_show]    || true
-    star_path    = options[:star_path]    || ''
-    star_on      = options[:star_on]      || image_path('star-on.png')
-    star_off     = options[:star_off]     || image_path('star-off.png')
-    star_half    = options[:star_half]    || image_path('star-half.png')
-    cancel       = options[:cancel]       || false
-    cancel_place = options[:cancel_place] || 'left'
-    cancel_hint  = options[:cancel_hint]  || 'Cancel current rating!'
-    cancel_on    = options[:cancel_on]    || image_path('cancel-on.png')
-    cancel_off   = options[:cancel_off]   || image_path('cancel-off.png')
-    noRatedMsg   = options[:noRatedMsg]   || 'I\'am readOnly and I haven\'t rated yet!'
-    # round        = options[:round]        || { down: .26, full: .6, up: .76 }
-    space        = options[:space]        || false
-    single       = options[:single]       || false
-    target       = options[:target]       || ''
-    targetText   = options[:targetText]   || ''
-    targetType   = options[:targetType]   || 'hint'
-    targetFormat = options[:targetFormat] || '{score}'
-    targetScore  = options[:targetScore]  || ''
-    readOnly     = options[:readonly]     || false
+    with_comment = options[:with_comment]        || false
+    button_text  = options[:comment_button_text] || 'Send'
+    star         = options[:star]                || 5
+    enable_half  = options[:enable_half]         || false
+    half_show    = options[:half_show]           || true
+    star_path    = options[:star_path]           || ''
+    star_on      = options[:star_on]             || image_path('star-on.png')
+    star_off     = options[:star_off]            || image_path('star-off.png')
+    star_half    = options[:star_half]           || image_path('star-half.png')
+    cancel       = options[:cancel]              || false
+    cancel_place = options[:cancel_place]        || 'left'
+    cancel_hint  = options[:cancel_hint]         || 'Cancel current rating!'
+    cancel_on    = options[:cancel_on]           || image_path('cancel-on.png')
+    cancel_off   = options[:cancel_off]          || image_path('cancel-off.png')
+    noRatedMsg   = options[:noRatedMsg]          || 'I\'am readOnly and I haven\'t rated yet!'
+    # round        = options[:round]             || { down: .26, full: .6, up: .76 }
+    space        = options[:space]               || false
+    single       = options[:single]              || false
+    target       = options[:target]              || ''
+    targetText   = options[:targetText]          || ''
+    targetType   = options[:targetType]          || 'hint'
+    targetFormat = options[:targetFormat]        || '{score}'
+    targetScore  = options[:targetScore]         || ''
+    readOnly     = options[:readonly]            || false
 
     disable_after_rate = options[:disable_after_rate] && true
     disable_after_rate = true if disable_after_rate == nil
 
     unless readOnly
       if disable_after_rate
-        readOnly = !(current_user && rateable_obj.can_rate?(current_user, dimension))
+        readOnly = !(@current_user && rateable_obj.can_rate?(@current_user, dimension))
       else
-        readOnly = !current_user || false
+        readOnly = !@current_user || false
+      end
+    end
+
+    if with_comment
+      rate = rateable_obj.rates(dimension)
+      if rate.present?
+        comment = rate.first.comment
       end
     end
 
@@ -67,7 +76,10 @@ module Helpers
                   "data-target-text" => targetText,
                   "data-target-type" => targetType,
                   "data-target-format" => targetFormat,
-                  "data-target-score" => targetScore
+                  "data-target-score" => targetScore,
+                  "data-with-comment" => with_comment,
+                  "data-rate-comment" => comment || ''
+
     end
   end
 
