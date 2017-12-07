@@ -41,9 +41,9 @@ module Helpers
     end
 
     if with_comment
-      rate = rateable_obj.rates(dimension)
+      rate = rateable_obj.rates(dimension).where(rater_id: @current_user.id).take
       if rate.present?
-        comment = rate.first.comment
+        comment = rate.comment
       end
     end
 
